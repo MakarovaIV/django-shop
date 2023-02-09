@@ -1,0 +1,21 @@
+{% extends 'root.html' %}
+
+
+{% block title %}
+    Login
+{% endblock %}
+
+
+
+{% block content %}
+ {% load cache %}
+    <h1>Log-in</h1>
+
+
+	<form method="post" class="from-group">
+	{% csrf_token %}
+    {{ login_form }}
+	<p>Don't have an account? Create one <a href="/register">here</a></p>
+	<button type="submit" class="btn btn-success">Login</button>
+    </form>
+{% endblock %}
