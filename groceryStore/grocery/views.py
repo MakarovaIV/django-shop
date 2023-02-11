@@ -4,10 +4,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from grocery.forms import RegisterForm
-
+from .models import Category
 
 def main_page(request):
-    return render(request, 'index.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request, 'index.html',  context=context)
 
 
 def register(request):

@@ -4,6 +4,21 @@
     {% if user.is_authenticated %}
         <p>Welcome, {{user.username}}</p>
 
+        <p>List of Categories</p>
+
+        <div>
+            <h2>{{category.name}}</h2>
+            <ul>
+                {% for category in categories %}
+                    <li>
+                        <div>
+                            <h3>{{category.name}}</h3>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
         <a class="nav-link" href="/logout/">Logout</a>
 
 
