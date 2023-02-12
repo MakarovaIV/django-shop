@@ -1,0 +1,46 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+
+{% block content %}
+
+        <h3>Welcome, {{user.username}}</h3>
+
+        <div>
+            <h3>List of Categories</h3>
+            {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'category_create' %}" class="text-decoration-none link-success">
+                    {% bs_icon 'plus-circle' size='1.3em' %}
+                </a>
+            {% endif %}
+        </div>
+        <div>
+            <h2>{{category.name}}</h2>
+            <ul>
+                {% for category in categories %}
+                    <li>
+                        <div>
+                            <p>
+                                {{category.name}}
+                                {% if user.is_superuser or user.is_staff %}
+                                    <a href="{% url 'category_update' pk=category.pk %}" class="text-decoration-none link-secondary">
+                                        {% bs_icon 'pencil' size='1.3em' %}
+                                    </a>
+                                    <a href="{% url 'category_delete' pk=category.pk %}" class="text-decoration-none link-danger">
+                                        {% bs_icon 'trash' size='1.3em' %}
+                                    </a>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a type="submit" class="btn btn-secondary" href="/logout/">Logout</a>
+
+
+    {% if user.is_authenticated %}
+        <a type="submit" class="btn btn-primary" href="/login/">Login</a>
+    {% endif %}
+{% endblock %}

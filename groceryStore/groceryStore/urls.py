@@ -15,16 +15,19 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from grocery import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('main/', views.main_page, name="main"),
     path('register/', views.register, name="register"),
     path('login/', views.login_handler, name='login'),
     path('logout/', views.logout_handler, name='logout'),
-    # path('', include('django.contrib.auth.urls')),
+    path('main/', views.main_page, name="main"),
+    path('main/create/', views.CategoryCreateView.as_view(), name='category_create'),
+    path('main/update/<int:pk>/', views.CategoryUpdateView.as_view(), name='category_update'),
+    path('main/delete/<int:pk>/', views.CategoryDeleteView.as_view(), name='category_delete'),
+
 
 
 ]
