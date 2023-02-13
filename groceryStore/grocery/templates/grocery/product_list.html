@@ -1,0 +1,36 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+
+{% block content %}
+
+
+    <h3>Category: {{category.name}}</h3>
+
+    <div>
+        {% for product in products %}
+
+            <div>
+                <div>
+                    <p>
+                        {{product.picture}}
+
+                        {{product.name}}
+
+                        {{product.price}} ({{product.units}})
+                    </p>
+                    {% if user.is_superuser or user.is_staff %}
+                        <a href="{% url 'product_update' category_id=category.pk  pk=product.pk %}" class="text-decoration-none link-secondary">
+                            {% bs_icon 'pencil' size='1.3em' %}
+                        </a>
+                        <a href="{% url 'product_delete' category_id=category.pk pk=product.pk %}" class="text-decoration-none link-danger">
+                            {% bs_icon 'trash' size='1.3em' %}
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

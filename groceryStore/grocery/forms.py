@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import PasswordInput, EmailInput
 
-from grocery.models import Category
+from grocery.models import Category, Product
 
 
 class RegisterForm(UserCreationForm):
@@ -23,3 +23,19 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
+
+
+class ProductForm(forms.ModelForm):
+    name = forms.CharField(max_length=100)
+    desc = forms.CharField(max_length=500)
+    composition = forms.CharField(max_length=500)
+    price = forms.DecimalField(max_digits=6, decimal_places=2)
+    units = forms.CharField(max_length=10)
+    picture = forms.ImageField(required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.Select(attrs={
+        'class': 'form_class'
+    }))
+
+    class Meta:
+        model = Product
+        fields = ['name', 'desc', 'composition', 'price', 'picture', 'category', 'units']

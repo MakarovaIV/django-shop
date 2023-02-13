@@ -1,19 +1,26 @@
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, DeleteView
-from grocery.forms import RegisterForm, CategoryForm
-from .models import Category
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from grocery.forms import RegisterForm, CategoryForm, ProductForm
+import django_filters
+from .models import Category, Product
 
 
-def main_page(request):
-    categories = Category.objects.all()
-    context = {
-        'categories': categories
-    }
-    return render(request, 'grocery/index.html',  context=context)
+# def main_page(request):
+#     categories = Category.objects.all()
+#     context = {
+#         'categories': categories
+#     }
+#     return render(request, 'grocery/category_list.html',  context=context)
+
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'grocery/category_list.html'
+    context_object_name = 'categories'
 
 
 def register(request):
@@ -23,7 +30,7 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
-            return redirect("login/")
+            return redirect("login")
 
     else:
         form = RegisterForm()
@@ -41,7 +48,7 @@ def login_handler(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect("main")
+                return redirect("category")
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -60,15 +67,68 @@ def logout_handler(request):
 class CategoryCreateView(CreateView):
     model = Category
     form_class = CategoryForm
-    success_url = reverse_lazy('main')
+    success_url = reverse_lazy('category')
 
 
 class CategoryUpdateView(UpdateView):
     model = Category
     form_class = CategoryForm
-    success_url = reverse_lazy('main')
+    success_url = reverse_lazy('category')
 
 
 class CategoryDeleteView(DeleteView):
     model = Category
-    success_url = reverse_lazy('main')
+    success_url = reverse_lazy('category')
+
+
+class ProductFilter(django_filters.FilterSet):
+    class Meta:
+        model = Product
+        fields = ['category']
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'grocery/product_list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['category_id'])
+        return Product.objects.filter(category=self.category)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
+        return context
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('category_detail')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('category_detail')
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
+    #     return context
+
+    def get_success_url(self):
+        return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})

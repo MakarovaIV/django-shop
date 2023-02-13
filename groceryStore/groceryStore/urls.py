@@ -19,15 +19,19 @@ from django.urls import path
 from grocery import views
 
 urlpatterns = [
+    path('', views.CategoryListView.as_view(), name="category"),
     path('admin/', admin.site.urls),
     path('register/', views.register, name="register"),
     path('login/', views.login_handler, name='login'),
     path('logout/', views.logout_handler, name='logout'),
-    path('main/', views.main_page, name="main"),
-    path('main/create/', views.CategoryCreateView.as_view(), name='category_create'),
-    path('main/update/<int:pk>/', views.CategoryUpdateView.as_view(), name='category_update'),
-    path('main/delete/<int:pk>/', views.CategoryDeleteView.as_view(), name='category_delete'),
+    path('category/create/', views.CategoryCreateView.as_view(), name='category_create'),
+    path('category/update/<int:pk>/', views.CategoryUpdateView.as_view(), name='category_update'),
+    path('category/delete/<int:pk>/', views.CategoryDeleteView.as_view(), name='category_delete'),
 
-
+    path('category/<int:category_id>/', views.ProductListView.as_view(), name='category_detail'),    # Product list
+    path('category/<int:category_id>/product/<int:product_id>/', views.ProductListView.as_view(), name='product_detail'),
+    path('category/<int:category_id>/product/create/', views.ProductCreateView.as_view(), name='product_create'),
+    path('category/<int:category_id>/product/update/<int:pk>/', views.ProductUpdateView.as_view(), name='product_update'),
+    path('category/<int:category_id>/product/delete/<int:pk>/', views.ProductDeleteView.as_view(), name='product_delete'),
 
 ]

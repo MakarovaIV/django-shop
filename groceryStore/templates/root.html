@@ -13,33 +13,36 @@
 {% load bootstrap_icons %}
 
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
-      <div class="container-fluid">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'main' %}">Catalog</a>
-              </li>
+        <div class="container-fluid">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'category' %}">Catalog</a>
+                </li>
 
-              {% if not user.is_authenticated %}
-              <li class="nav-item">
-                  <a class="nav-link" href="{% url 'register' %}">Register</a>
-              </li>
-              {% endif %}
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    {% endif %}
 
-              {% if user.is_authenticated %}
-              <li class="nav-item">
-                  <a class="nav-link">Logged in as {{ user.username }}</a>
-              </li>
-              <li>
-                  <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-              </li>
-              <li>
-                  <a class="nav-link" href="{% url 'logout' %}">
-                      {% bs_icon 'cart' size='1.3em' %}
-                  </a>
-              </li>
-              {% endif %}
-          </ul>
-      </div>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link">Logged in as {{ user.username }}</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="{% url 'logout' %}">
+                          {% bs_icon 'cart' size='1.3em' %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </nav>
 
     <div class="container">
