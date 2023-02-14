@@ -107,6 +107,9 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('category_detail')
 
+    def get_success_url(self):
+        return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})
+
 
 class ProductUpdateView(UpdateView):
     model = Product

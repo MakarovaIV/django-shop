@@ -6,7 +6,9 @@
 
 
     <h3>Category: {{category.name}}</h3>
-
+    <a href="{% url 'product_create' category_id=category.pk %}" class="text-decoration-none link-success">
+        {% bs_icon 'plus-circle' size='1.3em' %}
+    </a>
     <div>
         {% for product in products %}
 
