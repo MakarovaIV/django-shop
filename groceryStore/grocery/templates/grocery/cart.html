@@ -1,0 +1,19 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+
+{% block content %}
+
+
+    <h3>Cart</h3>
+
+
+    <div>
+        {% for cart in cart %}
+            {{ cart.total_price }}
+            {{ cart.total_count }}
+            {{ cart.cart_items }}
+        {% endfor %}
+    </div>
+
+{% endblock %}

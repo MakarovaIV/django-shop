@@ -5,6 +5,7 @@
 {% block content %}
 
 
+
     <h3>Category: {{category.name}}</h3>
     <a href="{% url 'product_create' category_id=category.pk %}" class="text-decoration-none link-success">
         {% bs_icon 'plus-circle' size='1.3em' %}
@@ -29,6 +30,14 @@
                             {% bs_icon 'trash' size='1.3em' %}
                         </a>
                     {% endif %}
+
+
+
+                    <form action="{% url 'add_to_cart' %}" method="post">
+                        {% csrf_token %}
+
+                        <button type="submit" name="id" value="{{product.id}}">Add to Cart</button>
+                    </form>
                 </div>
 
             </div>

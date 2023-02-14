@@ -1,4 +1,7 @@
+import json
+
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -6,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from grocery.forms import RegisterForm, CategoryForm, ProductForm
 import django_filters
-from .models import Category, Product
+from .models import Category, Product, Cart, CartItem
 
 
 # def main_page(request):
@@ -116,11 +119,6 @@ class ProductUpdateView(UpdateView):
     form_class = ProductForm
     success_url = reverse_lazy('category_detail')
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
-    #     return context
-
     def get_success_url(self):
         return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})
 
@@ -135,3 +133,45 @@ class ProductDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})
+
+
+# class CartView(DeleteView):
+#     model = Cart
+#     template_name = 'grocery/cart.html'
+#     context_object_name = 'cart'
+#
+#     def get_form_kwargs(self, **kwargs):
+#         kwargs = super().get_form_kwargs()
+#         cart_id = Cart.objects.get_or_create(user_id=self.request.user.pk)
+#         kwargs['pk'] = cart_id
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         return context
+
+def cart_view(request):
+    cart = None
+    cart_items = []
+
+    if request.user.is_authenticated:
+        cart = Cart.objects.get_or_create(user=request.user)
+        # cart_items = cart.cart_items.all()
+
+    context = {"cart": cart, "items": cart_items}
+    return render(request, "grocery/cart.html", context)
+
+
+def add_to_cart(request):
+    data = request.POST.copy()
+    product_id = data.get("id")
+    product = Product.objects.get(id=product_id)
+
+    if request.user.is_authenticated:
+        print("user:", request.user.pk)
+        cart, created_cart = Cart.objects.get_or_create(user_id=request.user.pk)
+        print("cart:", cart)
+        cart_item, created_cart_item = CartItem.objects.get_or_create(product=product, cart=cart)
+        cart_item.count = int(cart_item.count or 0) + 1
+        cart_item.save()
+
+    return render(request, 'grocery/cart.html')

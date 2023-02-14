@@ -39,3 +39,8 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'desc', 'composition', 'price', 'picture', 'category', 'units']
+
+
+class Cart(forms.ModelForm):
+    total_price = forms.FloatField(disabled=True)
+    total_count = forms.IntegerField(disabled=True)

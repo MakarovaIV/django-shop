@@ -24,4 +24,34 @@ class Product(models.Model):
         return f'{self.name} {self.price} {self.desc} {self.composition} {self.picture} {self.units}'
 
 
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    #
+    # def __str__(self):
+    #     return str(self.id)
+    #
+    # @property
+    # def total_price(self):
+    #     cart_items = self.cart_items.all()
+    #     total = sum([item.product.price for item in cart_items])
+    #     return total
+    #
+    # @property
+    # def total_count(self):
+    #     cart_items = self.cart_items.all()
+    #     count = sum([item.count for item in cart_items])
+    #     return count
+
+
+class CartItem(models.Model):
+    product = models.ForeignKey(Product,
+                                on_delete=models.CASCADE,
+                                related_name='product',
+                                null=True)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_items', null=True)
+    count = models.IntegerField(null=True)
+
+    def __str__(self):
+        return f'{self.product_id} {self.count} {self.cart}'
+
 
