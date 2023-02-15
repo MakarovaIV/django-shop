@@ -9,11 +9,24 @@
 
 
     <div>
-        {% for cart in cart %}
-            {{ cart.total_price }}
-            {{ cart.total_count }}
-            {{ cart.cart_items }}
+
+
+        <p> Total count:   {{ cart.total_count }}</p>
+        <p> Total price: {{ cart.total_price }} rub </p>
+
+
+
+
+        {% for item in cart_items %}
+
+        <p> Item name: {{ item.product.name }} </p>
+        <p> Item count: {{ item.count }} </p>
+        <p> Item price: {{ item.product.price }} ({{ item.product.units }}) </p>
+
         {% endfor %}
+
+        <a href="{% url 'make_order' %}" class="btn btn-success">Make order</a>
+
     </div>
 
 {% endblock %}

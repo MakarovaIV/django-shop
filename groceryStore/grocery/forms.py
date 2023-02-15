@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import PasswordInput, EmailInput
 
-from grocery.models import Category, Product
+from grocery.models import Category, Product, Cart, Order
 
 
 class RegisterForm(UserCreationForm):
@@ -41,6 +41,22 @@ class ProductForm(forms.ModelForm):
         fields = ['name', 'desc', 'composition', 'price', 'picture', 'category', 'units']
 
 
-class Cart(forms.ModelForm):
+class CartForm(forms.ModelForm):
     total_price = forms.FloatField(disabled=True)
     total_count = forms.IntegerField(disabled=True)
+
+    class Meta:
+        model = Cart
+        fields = ['total_price', 'total_count']
+
+
+class OrderForm(forms.ModelForm):
+    first_name = forms.CharField(label='First Name')
+    last_name = forms.CharField(label='Last Name')
+    address = forms.CharField(label='Delivery address (City, Street, House, Flat)', max_length=500)
+    payment_type = forms.ChoiceField(label='Choose payment type', choices=(("1", "Cash"), ("2", "Credit Card")))
+
+    class Meta:
+        model = Order
+        fields = ['first_name', 'last_name', 'address', 'payment_type']
+

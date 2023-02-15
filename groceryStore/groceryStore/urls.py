@@ -29,11 +29,17 @@ urlpatterns = [
     path('category/delete/<int:pk>/', views.CategoryDeleteView.as_view(), name='category_delete'),
 
     path('category/<int:category_id>/', views.ProductListView.as_view(), name='category_detail'),    # Product list
-    path('category/<int:category_id>/product/<int:product_id>/', views.ProductListView.as_view(), name='product_detail'),
+    path('category/<int:category_id>/product/<int:product_id>/', views.ProductListView.as_view(),
+         name='product_detail'),
     path('category/<int:category_id>/product/create/', views.ProductCreateView.as_view(), name='product_create'),
-    path('category/<int:category_id>/product/update/<int:pk>/', views.ProductUpdateView.as_view(), name='product_update'),
-    path('category/<int:category_id>/product/delete/<int:pk>/', views.ProductDeleteView.as_view(), name='product_delete'),
+    path('category/<int:category_id>/product/update/<int:pk>/', views.ProductUpdateView.as_view(),
+         name='product_update'),
+    path('category/<int:category_id>/product/delete/<int:pk>/', views.ProductDeleteView.as_view(),
+         name='product_delete'),
 
     path('cart/', views.cart_view, name='cart'),
-    path('cart/add/', views.add_to_cart, name='add_to_cart')
+    path('cart/add/', views.add_to_cart, name='add_to_cart'),
+    # path('order/', views.order_create, name='make_order'),
+    path('order/', views.MakeOrderView.as_view(), name='make_order'),
+    path('cart/order/submit/', views.OrderPaymentView.as_view(), name='submit_order'),
 ]
