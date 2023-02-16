@@ -7,10 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
-from grocery.forms import RegisterForm, CategoryForm, ProductForm, OrderForm
-import django_filters
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from grocery.forms import RegisterForm, CategoryForm, ProductForm, MakeOrderForm, OrderForm
 from .models import Category, Product, Cart, CartItem, Order
 
 
@@ -131,20 +129,6 @@ class ProductDeleteView(DeleteView):
         return reverse_lazy('category_detail', kwargs={'category_id': self.kwargs['category_id']})
 
 
-# class CartView(DeleteView):
-#     model = Cart
-#     template_name = 'grocery/cart.html'
-#     context_object_name = 'cart'
-#
-#     def get_form_kwargs(self, **kwargs):
-#         kwargs = super().get_form_kwargs()
-#         cart_id = Cart.objects.get_or_create(user_id=self.request.user.pk)
-#         kwargs['pk'] = cart_id
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         return context
-
 def cart_view(request):
     cart = None
     cart_items = []
@@ -161,7 +145,8 @@ def add_to_cart(request):
     data = request.POST.copy()
     product_id = data.get("id")
     product = Product.objects.get(id=product_id)
-    category_from_product = Product.objects.all().filter(id=product_id).values('category_id')
+    category_from_product = Product.objects.filter(id=product_id).values('category_id')
+    print("category_from_product:", category_from_product)
     for catetegory_ids in category_from_product:
         category_id = catetegory_ids['category_id']
 
@@ -179,16 +164,24 @@ def add_to_cart(request):
 
 class MakeOrderView(CreateView):
     model = Cart
-    form_class = OrderForm
+    form_class = MakeOrderForm
     template_name = 'grocery/order_form.html'
     context_object_name = 'cart'
     success_url = reverse_lazy('submit_order')
 
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()
-        Order.objects.create(user=request.user, address=data["address"])
-        cart = Cart.objects.all().filter(user_id=request.user.pk)
-        cart.delete()
+        order = Order.objects.create(user=request.user, address=data["address"])
+        cart_id = Cart.objects.filter(user_id=request.user.pk).first()
+        print("cart:", cart_id)
+
+        order_items = CartItem.objects.filter(cart_id=cart_id)
+        print("order_items:", order_items)
+        for order_item in order_items:
+            order_item.order_id = order.id
+            order_item.save()
+
+        cart_id.delete()
         return render(request, 'grocery/confirm_order.html')
 
     def get(self, request, *args, **kwargs):
@@ -197,5 +190,29 @@ class MakeOrderView(CreateView):
 
 class OrderPaymentView(CreateView):
     model = Order
-    form_class = OrderForm
+    form_class = MakeOrderForm
     template_name = 'grocery/confirm_order.html'
+
+
+class OrderListView(ListView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'grocery/order_list.html'
+    context_object_name = 'orderlist'
+
+    @staticmethod
+    def format_product(product):
+        return product['name'] + ' (' + str(product['price']) + ' ' + product['units'] + ')'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = Order.objects.filter(user_id=self.request.user.pk)
+        for order in orders:
+            product_ids = order.order_items.all().values('product')
+            products = Product.objects.filter(id__in=product_ids)
+
+            product_list = products.values('name', 'price', 'units')
+            order.product_list = list(map(self.format_product, product_list))
+
+        context["custom_orders"] = orders
+        return context

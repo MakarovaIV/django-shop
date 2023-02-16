@@ -39,7 +39,9 @@ urlpatterns = [
 
     path('cart/', views.cart_view, name='cart'),
     path('cart/add/', views.add_to_cart, name='add_to_cart'),
-    # path('order/', views.order_create, name='make_order'),
+    # path('order/', views.make_order, name='make_order'),
     path('order/', views.MakeOrderView.as_view(), name='make_order'),
     path('cart/order/submit/', views.OrderPaymentView.as_view(), name='submit_order'),
+
+    path('cart/order/list/', views.OrderListView.as_view(), name='order_list'),
 ]

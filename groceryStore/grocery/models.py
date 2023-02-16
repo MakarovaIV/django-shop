@@ -43,23 +43,29 @@ class Cart(models.Model):
         return count
 
 
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    # cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart', null=True)
+    # cart_items = models.ForeignKey(CartItem, on_delete=models.CASCADE, related_name='cart_items', null=True)
+    address = models.CharField(max_length=500)
+    paid = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} {self.order_items} {self.address} {self.paid} {self.created}'
+
+
 class CartItem(models.Model):
     product = models.ForeignKey(Product,
                                 on_delete=models.CASCADE,
                                 related_name='product',
                                 null=True)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_items', null=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, related_name='cart_items', null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items', null=True)
     count = models.IntegerField(null=True)
 
     def __str__(self):
         return f'{self.product} {self.count} {self.cart}'
 
 
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
-    address = models.CharField(max_length=500)
-    paid = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user} {self.cart_items} {self.address} {self.paid} {self.created}'

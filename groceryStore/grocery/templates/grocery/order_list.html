@@ -1,0 +1,28 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+
+{% block content %}
+
+
+        <div>
+            <h3>{{user.username}}, your orders</h3>
+        </div>
+        <div>
+                {% for order in custom_orders %}
+
+                        <div>
+                            <p>Order ID: {{ order.id }}</p>
+                            <p>Delivery address: {{ order.address }}</p>
+                            <p>Products:
+                                {% for product in order.product_list|slice:":5" %}
+                                   <li>{{ product }}</li>
+                                {% endfor %}
+                            </p>
+
+                        </div>
+
+                {% endfor %}
+        </div>
+
+{% endblock %}

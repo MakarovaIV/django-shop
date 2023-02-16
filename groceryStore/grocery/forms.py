@@ -50,13 +50,24 @@ class CartForm(forms.ModelForm):
         fields = ['total_price', 'total_count']
 
 
-class OrderForm(forms.ModelForm):
+class MakeOrderForm(forms.ModelForm):
     first_name = forms.CharField(label='First Name')
     last_name = forms.CharField(label='Last Name')
     address = forms.CharField(label='Delivery address (City, Street, House, Flat)', max_length=500)
     payment_type = forms.ChoiceField(label='Choose payment type', choices=(("1", "Cash"), ("2", "Credit Card")))
+    product_name = forms.CharField(label='Product name', max_length=500, disabled=True)
 
     class Meta:
         model = Order
         fields = ['first_name', 'last_name', 'address', 'payment_type']
 
+
+class OrderForm(forms.ModelForm):
+    address = forms.CharField(label='Delivery address (City, Street, House, Flat)', max_length=500, disabled=True)
+    payment_type = forms.ChoiceField(label='Choose payment type', choices=(("1", "Cash"), ("2", "Credit Card")),
+                                     disabled=True)
+    product_name = forms.CharField(label='Product name', max_length=500, disabled=True)
+
+    class Meta:
+        model = Order
+        fields = ['address', 'payment_type', 'product_name']
