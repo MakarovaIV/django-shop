@@ -1,0 +1,45 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+{% load static %}
+{% block content %}
+
+
+        <div>
+            <h3>{{user.username}}'s orders</h3>
+        </div>
+        <div>
+            {% if custom_orders %}
+                {% for order in custom_orders %}
+                    <div class="card border-dark mb-3" style="width: 18rem; margin-bottom:2rem; padding:1rem">
+                        <h4>Order ID: {{ order.id }}</h4>
+                        <p>Delivery address: {{ order.address }}</p>
+
+                        <div>
+                            <h5 class="card-title">Products:</h5>
+                            {% for product in order.product_list|slice:":5" %}
+                                <div class="card-text">
+                                    {% if product.picture %}
+                                        <img class="card-img-top" src="/media/{{ product.picture }}" alt="{{product.name}} photo" width="200">
+                                    {% else %}
+                                    <p class="card-img-top">No photo</p>
+                                    {% endif %}
+                                    <p>
+                                        {{ product.formatted_text }}
+                                    </p>
+                                    <hr class="hr" />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+            <div style="margin:0; margin-top:2rem">
+                <h4>Oops, you haven't made order yet</h4>
+            </div>
+            {% endif %}
+
+
+        </div>
+
+{% endblock %}

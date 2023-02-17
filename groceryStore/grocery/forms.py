@@ -19,10 +19,11 @@ class RegisterForm(UserCreationForm):
 
 class CategoryForm(forms.ModelForm):
     name = forms.CharField(max_length=100)
+    picture = forms.ImageField(required=False)
 
     class Meta:
         model = Category
-        fields = ['name']
+        fields = ['name', 'picture']
 
 
 class ProductForm(forms.ModelForm):
@@ -55,7 +56,6 @@ class MakeOrderForm(forms.ModelForm):
     last_name = forms.CharField(label='Last Name')
     address = forms.CharField(label='Delivery address (City, Street, House, Flat)', max_length=500)
     payment_type = forms.ChoiceField(label='Choose payment type', choices=(("1", "Cash"), ("2", "Credit Card")))
-    product_name = forms.CharField(label='Product name', max_length=500, disabled=True)
 
     class Meta:
         model = Order

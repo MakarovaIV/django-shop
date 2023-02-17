@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from grocery import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.CategoryListView.as_view(), name="category"),
@@ -44,4 +46,4 @@ urlpatterns = [
     path('cart/order/submit/', views.OrderPaymentView.as_view(), name='submit_order'),
 
     path('cart/order/list/', views.OrderListView.as_view(), name='order_list'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

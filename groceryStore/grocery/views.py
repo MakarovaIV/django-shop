@@ -1,8 +1,4 @@
-import json
-from datetime import datetime
-
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -12,17 +8,9 @@ from grocery.forms import RegisterForm, CategoryForm, ProductForm, MakeOrderForm
 from .models import Category, Product, Cart, CartItem, Order
 
 
-# def main_page(request):
-#     categories = Category.objects.all()
-#     context = {
-#         'categories': categories
-#     }
-#     return render(request, 'grocery/category_list.html',  context=context)
-
-
 class CategoryListView(ListView):
     model = Category
-    template_name = 'grocery/category_list.html'
+    template_name = 'grocery/category/category_list.html'
     context_object_name = 'categories'
 
 
@@ -86,7 +74,7 @@ class CategoryDeleteView(DeleteView):
 
 class ProductListView(ListView):
     model = Product
-    template_name = 'grocery/product_list.html'
+    template_name = 'grocery/product/product_list.html'
     context_object_name = 'products'
 
     def get_queryset(self):
@@ -165,7 +153,7 @@ def add_to_cart(request):
 class MakeOrderView(CreateView):
     model = Cart
     form_class = MakeOrderForm
-    template_name = 'grocery/order_form.html'
+    template_name = 'grocery/order/order_form.html'
     context_object_name = 'cart'
     success_url = reverse_lazy('submit_order')
 
@@ -182,7 +170,7 @@ class MakeOrderView(CreateView):
             order_item.save()
 
         cart_id.delete()
-        return render(request, 'grocery/confirm_order.html')
+        return render(request, 'grocery/order/confirm_order.html')
 
     def get(self, request, *args, **kwargs):
         return super().get(self, request, *args, **kwargs)
@@ -191,18 +179,20 @@ class MakeOrderView(CreateView):
 class OrderPaymentView(CreateView):
     model = Order
     form_class = MakeOrderForm
-    template_name = 'grocery/confirm_order.html'
+    template_name = 'grocery/order/confirm_order.html'
 
 
 class OrderListView(ListView):
     model = Order
     form_class = OrderForm
-    template_name = 'grocery/order_list.html'
+    template_name = 'grocery/order/order_list.html'
     context_object_name = 'orderlist'
 
     @staticmethod
     def format_product(product):
-        return product['name'] + ' (' + str(product['price']) + ' ' + product['units'] + ')'
+        formatted_text = product['name'] + ' (' + str(product['price']) + ' ' + product['units'] + ')'
+        product['formatted_text'] = formatted_text
+        return product
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -211,7 +201,7 @@ class OrderListView(ListView):
             product_ids = order.order_items.all().values('product')
             products = Product.objects.filter(id__in=product_ids)
 
-            product_list = products.values('name', 'price', 'units')
+            product_list = products.values('name', 'price', 'units', 'picture')
             order.product_list = list(map(self.format_product, product_list))
 
         context["custom_orders"] = orders

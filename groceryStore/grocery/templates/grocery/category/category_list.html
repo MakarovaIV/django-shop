@@ -1,0 +1,42 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+{% load static %}
+
+{% block content %}
+        <div style="display:flex; align-items:center; margin:0">
+            <div>
+                <h3>List of Categories</h3>
+            </div>
+            <div>
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'category_create' %}" class="text-decoration-none link-success" style="margin-left:2rem">
+                        {% bs_icon 'plus-circle' size='1.3em' %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div>
+            {% for category in categories %}
+                    <div class="card border-dark mb-3 text-center" style="width: 18rem; margin-bottom:2rem; padding:1rem">
+                        <div class="card-body">
+                            {% if category.picture %}
+                                <img src="{{ category.picture.url }}" alt="{{category.name}} photo" width="200">
+                            {% endif %}
+                            <a href="{% url 'category_detail' category_id=category.pk %}" class="card-link text-decoration-none link-secondary">
+                                {{category.name}}
+                            </a>
+                            {% if user.is_superuser or user.is_staff %}
+                                <a href="{% url 'category_update' pk=category.pk %}" class="text-decoration-none link-secondary">
+                                    {% bs_icon 'pencil' size='1.3em' %}
+                                </a>
+                                <a href="{% url 'category_delete' pk=category.pk %}" class="text-decoration-none link-danger">
+                                    {% bs_icon 'trash' size='1.3em' %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+            {% endfor %}
+        </div>
+
+{% endblock %}
