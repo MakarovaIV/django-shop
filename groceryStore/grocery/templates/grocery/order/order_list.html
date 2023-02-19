@@ -17,19 +17,21 @@
 
                         <div>
                             <h5 class="card-title">Products:</h5>
-                            {% for product in order.product_list|slice:":5" %}
                                 <div class="card-text">
+                                {% for product in order.product_list|slice:":5" %}
                                     {% if product.picture %}
-                                        <img class="card-img-top" src="/media/{{ product.picture }}" alt="{{product.name}} photo" width="200">
+                                        <img class="card-img-top" src="{{ product.picture }}" alt="{{product.name}} photo" width="200">
                                     {% else %}
                                     <p class="card-img-top">No photo</p>
                                     {% endif %}
                                     <p>
                                         {{ product.formatted_text }}
                                     </p>
-                                    <hr class="hr" />
+                                    <hr />
                                 </div>
-                            {% endfor %}
+                                {% endfor %}
+
+                                <h5>Total price: {{order.total_price}}</h5>
                         </div>
                     </div>
                 {% endfor %}

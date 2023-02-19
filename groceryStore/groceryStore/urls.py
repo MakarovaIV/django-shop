@@ -46,4 +46,4 @@ urlpatterns = [
     path('cart/order/submit/', views.OrderPaymentView.as_view(), name='submit_order'),
 
     path('cart/order/list/', views.OrderListView.as_view(), name='order_list'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

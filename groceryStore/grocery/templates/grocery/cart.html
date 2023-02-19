@@ -22,7 +22,7 @@
         <div class="card border-dark mb-3 text-center" style="width: 18rem; margin-bottom:2rem; padding:1rem">
             <div>
                 {% if item.product.picture %}
-                    <img src="/media/{{ item.product.picture }}" width="200">
+                    <img src="{{ item.product.picture }}" width="200">
                 {% else %}
                     <p class="card-img-top">No photo</p>
                 {% endif %}

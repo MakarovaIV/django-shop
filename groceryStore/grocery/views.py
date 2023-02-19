@@ -84,6 +84,18 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
+
+        cart = Cart.objects.filter(user=self.request.user).last()
+        if cart:
+            cart_items = CartItem.objects.filter(cart_id=cart.id).values('count', 'product_id')
+            map = {}
+            for cart_item in cart_items:
+                map[str(cart_item['product_id'])] = cart_item['count']
+
+            for product in context['products']:
+                if str(product.pk) in map:
+                    product.count_in_cart = map[str(product.pk)]
+
         return context
 
 
@@ -132,21 +144,34 @@ def cart_view(request):
 def add_to_cart(request):
     data = request.POST.copy()
     product_id = data.get("id")
+
     product = Product.objects.get(id=product_id)
     category_from_product = Product.objects.filter(id=product_id).values('category_id')
-    print("category_from_product:", category_from_product)
+
     for catetegory_ids in category_from_product:
         category_id = catetegory_ids['category_id']
 
     if request.user.is_authenticated:
-
         cart, created_cart = Cart.objects.get_or_create(user=request.user)
 
         cart_item, created_cart_item = CartItem.objects.get_or_create(product=product, cart=cart)
-        cart_item.count = int(cart_item.count or 0) + 1
-        cart_item.save()
+        current_count = int(cart_item.count or 0)
+        new_count = current_count
 
-    # context = {"cart": cart, "category_id": category_id}
+        if data.get("btn_func") == "decrement":
+            new_count = current_count - 1
+        elif data.get("btn_func") == "increment":
+            new_count = current_count + 1
+        else:
+            new_count = 1
+
+        if new_count <= 0:
+            cart_item.delete()
+            print("ZCzc")
+        else:
+            cart_item.count = new_count
+            cart_item.save()
+
     return redirect('category_detail', category_id)
 
 

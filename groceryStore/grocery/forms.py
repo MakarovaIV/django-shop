@@ -19,7 +19,7 @@ class RegisterForm(UserCreationForm):
 
 class CategoryForm(forms.ModelForm):
     name = forms.CharField(max_length=100)
-    picture = forms.ImageField(required=False)
+    picture = forms.CharField(required=False)
 
     class Meta:
         model = Category
@@ -28,11 +28,11 @@ class CategoryForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
     name = forms.CharField(max_length=100)
-    desc = forms.CharField(max_length=500)
-    composition = forms.CharField(max_length=500)
+    desc = forms.CharField(max_length=500, required=False)
+    composition = forms.CharField(max_length=500, required=False)
     price = forms.DecimalField(max_digits=6, decimal_places=2)
     units = forms.CharField(max_length=10)
-    picture = forms.ImageField(required=False)
+    picture = forms.CharField(required=False)
     category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.Select(attrs={
         'class': 'form_class'
     }))
