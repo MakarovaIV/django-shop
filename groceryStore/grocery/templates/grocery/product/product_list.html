@@ -27,7 +27,7 @@
                         <img src="{{ product.picture }}" alt="{{product.name}} photo" width="200">
                     {% endif %}
                     <h5 class="card-title">
-                        {{product.name}}
+                        <a href="{% url 'product_detail' pk=product.pk %}"> {{product.name}} </a>
                     </h5>
                     <p>
                         {{product.price}} ({{product.units}})
@@ -49,6 +49,7 @@
                             <form action="{% url 'add_to_cart' %}" method="post">
                                 <input name="id" value="{{product.id}}" style="display:none"/>
 
+                                <input name="current_path" style="display:none"/>
 
 
                                 {% csrf_token %}
@@ -67,6 +68,12 @@
 
             </div>
         {% endfor %}
+
+        <script>
+            setTimeout(function(){
+                document.querySelectorAll("input[name=current_path]").forEach(inp => inp.value = window.location.pathname);
+            }, 10)
+        </script>
     </div>
 
 {% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'root.html' %}
+
+{% load bootstrap_icons %}
+
+{% block content %}
+<style>
+    .wrapper{
+        display: block;
+        position: relative;
+    }
+
+    .product-card{
+        position: relative;
+        display:flex;
+        flex-direction: row;
+        max-width: 60rem;
+    }
+    .image-wrapper{
+        position: relative;
+        max-width: 30rem;
+    }
+
+    .image-wrapper img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .content-wrapper{
+        position: relative;
+        display:flex;
+        flex-direction: column;
+    }
+
+    .content-wrapper .product-desc,
+    .content-wrapper .product-composition,
+    .content-wrapper .product-price{
+        margin-top: 1rem;
+    }
+
+    .content-wrapper .product-price{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+
+
+    <div class="wrapper">
+
+        <div class="product-card">
+            <div class="image-wrapper">
+                {% if product.picture %}
+                    <img src="{{ product.picture }}" alt="{{product.name}} photo" width="200">
+                {% endif %}
+            </div>
+
+            <div class="content-wrapper">
+                <h5 class="card-title">
+                    {{product.name}}
+                </h5>
+
+                <p class="product-desc">{{ product.desc }}</p>
+
+                <p class="product-composition">{{ product.composition }}</p>
+
+
+                <h6 class="product-price">
+                    <span>{{product.price}}</span>
+                    <span>({{product.units}})</span>
+                </h6>
+
+                <div class="btn-group" style="display: flex; align-items: center; justify-content: center;">
+                    <form action="{% url 'add_to_cart' %}" method="post">
+                        <input name="id" value="{{product.id}}" style="display:none"/>
+                        <input name="current_path" value="1" style="display:none"/>
+
+
+                        {% csrf_token %}
+
+                        {% if count_in_cart %}
+                        <button class="btn btn-success" type="submit" name="btn_func" value="decrement">-</button>
+                        <span style="border:1px solid black; padding:0.6rem; margin: 0 0.2rem">{{ count_in_cart }}</span>
+                        <button class="btn btn-success" type="submit" name="btn_func" value="increment">+</button>
+                        {% else %}
+                        <button class="btn btn-success" type="submit" name="id" value="{{ product.id }}">Add to Cart</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <a href="{% url 'category_detail' category_id=category_id %}" class="text-decoration-none btn btn-primary">Back</a>
+
+        <script>
+            setTimeout(function(){
+                document.querySelectorAll("input[name=current_path]").forEach(inp => inp.value = window.location.pathname);
+            }, 10)
+        </script>
+    </div>
+
+{% endblock %}

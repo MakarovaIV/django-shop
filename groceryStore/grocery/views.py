@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from grocery.forms import RegisterForm, CategoryForm, ProductForm, MakeOrderForm, OrderForm
 from .models import Category, Product, Cart, CartItem, Order
 
@@ -146,18 +146,14 @@ def add_to_cart(request):
     product_id = data.get("id")
 
     product = Product.objects.get(id=product_id)
-    category_from_product = Product.objects.filter(id=product_id).values('category_id')
-
-    for catetegory_ids in category_from_product:
-        category_id = catetegory_ids['category_id']
 
     if request.user.is_authenticated:
         cart, created_cart = Cart.objects.get_or_create(user=request.user)
 
         cart_item, created_cart_item = CartItem.objects.get_or_create(product=product, cart=cart)
         current_count = int(cart_item.count or 0)
-        new_count = current_count
 
+        new_count = current_count
         if data.get("btn_func") == "decrement":
             new_count = current_count - 1
         elif data.get("btn_func") == "increment":
@@ -172,7 +168,7 @@ def add_to_cart(request):
             cart_item.count = new_count
             cart_item.save()
 
-    return redirect('category_detail', category_id)
+    return redirect(data['current_path'])
 
 
 class MakeOrderView(CreateView):
@@ -230,4 +226,25 @@ class OrderListView(ListView):
             order.product_list = list(map(self.format_product, product_list))
 
         context["custom_orders"] = orders
+        return context
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'grocery/product/product_detail.html'
+    context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        temp = Product.objects.filter(id=self.kwargs['pk']).values('category_id').last()
+        context['category_id'] = temp['category_id']
+
+        cart = Cart.objects.filter(user=self.request.user).last()
+        if cart:
+            cart_item = CartItem.objects.filter(cart_id=cart.id, product_id=context['product'].pk).values('count').last()
+
+            if cart_item:
+                context['count_in_cart'] = cart_item['count']
+
         return context
