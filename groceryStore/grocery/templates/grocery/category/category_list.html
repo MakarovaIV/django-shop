@@ -4,7 +4,44 @@
 {% load static %}
 
 {% block content %}
-        <div style="display:flex; align-items:center; margin:0">
+<style>
+    .title-wrapper{
+       display:flex;
+       align-items:center;
+       margin:0;
+    }
+
+    .card-wrapper{
+        display:flex;
+        flex-direction: column;
+        max-width: 17rem;
+        margin-bottom:2rem;
+        padding:1rem;
+    }
+
+    .image-wrapper{
+        position: relative;
+        max-width: 15rem;
+        max-height: 10rem;
+        width: 15rem;
+        height: 10rem;
+    }
+
+    .image-wrapper img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .btn-wrapper{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top:0.4rem;
+        padding:0.2rem;
+    }
+</style>
+        <div class="title-wrapper">
             <div>
                 <h3>List of Categories</h3>
             </div>
@@ -16,33 +53,31 @@
                 {% endif %}
             </div>
         </div>
-        <div>
-            {% for category in categories %}
-                    <div class="card border-dark mb-3 text-center" style="width: 18rem; margin-bottom:2rem; padding:1rem">
-                        <div class="card-body">
-                            {% if category.picture %}
-                            <a href="{% url 'category_detail' category_id=category.pk %}" class="card-link text-decoration-none link-secondary">
-                                <img src="{{ category.picture }}" alt="{{category.name}} photo" width="200">
-                            </a>
-                            {% endif %}
+        {% for category in categories %}
+            <div class="card border-dark mb-3 text-center card-wrapper">
+                {% if category.picture %}
+                <div class="image-wrapper">
+                    <a href="{% url 'category_detail' category_id=category.pk %}" class="card-link text-decoration-none link-secondary">
+                        <img src="{{ category.picture }}" alt="{{category.name}} photo" width="200">
+                    </a>
+                </div>
+                {% endif %}
 
-                            <div style="margin-top:0.4rem; padding:0.2rem; display: flex; align-items: center; justify-content: center;">
-                                <a href="{% url 'category_detail' category_id=category.pk %}" class="card-link text-decoration-none link-secondary">
-                                    {{category.name}}
-                                </a>
+                <div class="btn-wrapper">
+                    <a href="{% url 'category_detail' category_id=category.pk %}" class="card-link text-decoration-none link-secondary">
+                        {{category.name}}
+                    </a>
 
-                                {% if user.is_superuser or user.is_staff %}
-                                <a href="{% url 'category_update' pk=category.pk %}" class="text-decoration-none link-secondary" style="margin-left:0.6rem">
-                                    {% bs_icon 'pencil' size='1.8rem' %}
-                                </a>
-                                <a href="{% url 'category_delete' pk=category.pk %}" class="text-decoration-none link-danger">
-                                    {% bs_icon 'trash' size='1.8rem' %}
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-            {% endfor %}
-        </div>
+                    {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'category_update' pk=category.pk %}" class="text-decoration-none link-secondary" style="margin-left:0.6rem">
+                        {% bs_icon 'pencil' size='1.8rem' %}
+                    </a>
+                    <a href="{% url 'category_delete' pk=category.pk %}" class="text-decoration-none link-danger">
+                        {% bs_icon 'trash' size='1.8rem' %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
 
 {% endblock %}

@@ -4,9 +4,11 @@
 {% load static %}
 {% block content %}
 
+<style>
 
+</style>
         <div>
-            <h3>{{user.username}}'s orders</h3>
+            <h3>List of orders</h3>
         </div>
         <div>
             {% if custom_orders %}
@@ -22,7 +24,7 @@
                                     {% if product.picture %}
                                         <img class="card-img-top" src="{{ product.picture }}" alt="{{product.name}} photo" width="200">
                                     {% else %}
-                                    <p class="card-img-top">No photo</p>
+                                        <p class="card-img-top">No photo</p>
                                     {% endif %}
                                     <p>
                                         {{ product.formatted_text }}
