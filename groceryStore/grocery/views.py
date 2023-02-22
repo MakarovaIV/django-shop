@@ -85,16 +85,17 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context["category"] = get_object_or_404(Category, id=self.kwargs['category_id'])
 
-        cart = Cart.objects.filter(user=self.request.user).last()
-        if cart:
-            cart_items = CartItem.objects.filter(cart_id=cart.id).values('count', 'product_id')
-            map = {}
-            for cart_item in cart_items:
-                map[str(cart_item['product_id'])] = cart_item['count']
+        if self.request.user.is_authenticated:
+            cart = Cart.objects.filter(user=self.request.user).last()
+            if cart:
+                cart_items = CartItem.objects.filter(cart_id=cart.id).values('count', 'product_id')
+                map = {}
+                for cart_item in cart_items:
+                    map[str(cart_item['product_id'])] = cart_item['count']
 
-            for product in context['products']:
-                if str(product.pk) in map:
-                    product.count_in_cart = map[str(product.pk)]
+                for product in context['products']:
+                    if str(product.pk) in map:
+                        product.count_in_cart = map[str(product.pk)]
 
         return context
 
@@ -240,11 +241,12 @@ class ProductDetailView(DetailView):
         temp = Product.objects.filter(id=self.kwargs['pk']).values('category_id').last()
         context['category_id'] = temp['category_id']
 
-        cart = Cart.objects.filter(user=self.request.user).last()
-        if cart:
-            cart_item = CartItem.objects.filter(cart_id=cart.id, product_id=context['product'].pk).values('count').last()
+        if self.request.user.is_authenticated:
+            cart = Cart.objects.filter(user=self.request.user).last()
+            if cart:
+                cart_item = CartItem.objects.filter(cart_id=cart.id, product_id=context['product'].pk).values('count').last()
 
-            if cart_item:
-                context['count_in_cart'] = cart_item['count']
+                if cart_item:
+                    context['count_in_cart'] = cart_item['count']
 
         return context
