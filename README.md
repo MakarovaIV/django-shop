@@ -20,6 +20,11 @@ pip install -r requirements.txt
 cd groceryStore/
 ```
 
+- Run script for creating test data
+```
+python manage.py fill_db
+```
+
 - Run Django web-server
 ```
 python manage.py runserver
